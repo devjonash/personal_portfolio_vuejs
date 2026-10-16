@@ -1,0 +1,200 @@
+@import "tailwindcss";
+
+@source "../index.html";
+
+/* ==================================================================
+   DESIGN TOKENS
+   The runtime theme lives on :root / body.light so the dark ↔ light
+   toggle can swap every value at once. `@theme inline` then exposes
+   those same values as Tailwind utilities (bg-panel, text-dim, ...).
+   ================================================================== */
+
+:root {
+  --bg: #0d0f16;
+  --panel: #161923;
+  --panel-2: #1c202c;
+  --border: #262b39;
+  --text: #eef0f5;
+  --text-dim: #9aa0b4;
+  --text-faint: #6b7188;
+  --accent1: #8b5cf6;
+  --accent2: #3b82f6;
+  --accent-grad: linear-gradient(135deg, var(--accent1), var(--accent2));
+}
+
+body.light {
+  --bg: #f3f4f8;
+  --panel: #ffffff;
+  --panel-2: #eef0f6;
+  --border: #e2e5ee;
+  --text: #14161f;
+  --text-dim: #575f75;
+  --text-faint: #8890a4;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-panel2: var(--panel-2);
+  --color-line: var(--border);
+  --color-ink: var(--text);
+  --color-dim: var(--text-dim);
+  --color-faint: var(--text-faint);
+  --color-accent1: var(--accent1);
+  --color-accent2: var(--accent2);
+  --color-brand: #a78bfa;
+  --color-thumb: #222222;
+  /* Brand gradient — used by the avatars and the theme switch knob track. */
+  --background-image-accent-grad: var(--accent-grad);
+}
+
+@theme {
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Sora", sans-serif;
+
+  --radius-card: 16px;
+  --radius-tile: 10px;
+
+  /* Layout thresholds used by the original responsive grid */
+  --breakpoint-d901: 901px;
+  --breakpoint-d1001: 1001px;
+  --breakpoint-d1101: 1101px;
+  --breakpoint-d1281: 1281px;
+  --breakpoint-d641: 641px;
+  --breakpoint-d561: 561px;
+  --breakpoint-d481: 481px;
+  --breakpoint-d401: 401px;
+
+  --animate-marquee-left: marquee-left 6s linear infinite;
+  --animate-marquee-right: marquee-right 6s linear infinite;
+  --animate-type-blink: type-blink 0.15s steps(1) infinite;
+
+  @keyframes marquee-left {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes marquee-right {
+    from {
+      transform: translateX(-50%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  @keyframes type-blink {
+    0%,
+    49% {
+      opacity: 1;
+    }
+    50%,
+    100% {
+      opacity: 0;
+    }
+  }
+}
+
+/* ==================================================================
+   BASE
+   Structural resets that Tailwind's preflight does not cover.
+   ================================================================== */
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    transition:
+      background 0.2s,
+      color 0.2s;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+  }
+
+  a,
+  button {
+    cursor: pointer;
+  }
+
+  button {
+    font-family: inherit;
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid #a78bfa;
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+
+  /* Room for the fixed mobile top bar. The hamburger sidebar is the only
+     navigation on small screens, so there is no bottom bar to make room for. */
+  @media (max-width: 900px) {
+    body {
+      padding-top: calc(58px + env(safe-area-inset-top, 0px));
+      padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+/* ==================================================================
+   SHARED PRESS FEEDBACK
+   Applied to every tappable card / button / nav item.
+   ================================================================== */
+
+@utility press-feedback {
+  transition:
+    transform 0.12s ease,
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+/* ==================================================================
+   CIRCULAR REVEAL for the dark / light toggle (View Transitions API)
+   ================================================================== */
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) {
+  z-index: 1;
+}
+::view-transition-new(root) {
+  z-index: 2;
+}
